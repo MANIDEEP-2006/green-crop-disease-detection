@@ -1,2 +1,2 @@
-# green-crop-disease-detection
-GreenCrop is an intelligent agriculture application that helps farmers monitor crop health, detect plant diseases, and analyze crop yield using data analytics and machine learning techniques. The platform provides insights to improve productivity and support smart farming decisions.
+# crop_disease_prediction
+in this website, we upload the pictures of plant every week, and based on the consequences, we will get the analytics.

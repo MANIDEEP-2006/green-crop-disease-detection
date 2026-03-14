@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GreenCrop - AI Garden Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #134e5e, #71b280, #2e7d32, #1b5e20);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            overflow: hidden;
+        }
+
+        @keyframes gradientBG {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* AUTH SCREEN */
+        .auth-screen {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .auth-box {
+            background: rgba(255, 255, 255, 0.97);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            width: 361px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.8s ease;
+            position: relative;
+        }
+
+        .auth-box h2 {
+            margin-bottom: 20px;
+            color: #2e7d32;
+        }
+
+        .auth-box input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+        }
+
+        .auth-box button {
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(45deg, #2e7d32, #66bb6a);
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(46, 125, 50, 0.2);
+        }
+
+        .auth-box button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(46, 125, 50, 0.4);
+        }
+
+        .auth-box button:active {
+            transform: translateY(1px);
+        }
+
+        .toggle-text {
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .toggle-text span {
+            color: #2e7d32;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* DASHBOARD */
+        .container {
+            width: 95%;
+            max-width: 900px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            display: none;
+            animation: fadeIn 0.6s ease-in-out;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2e7d32;
+            margin-bottom: 20px;
+        }
+
+        button {
+            background: linear-gradient(45deg, #2e7d32, #66bb6a);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(46, 125, 50, 0.2);
+            font-weight: 600;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(46, 125, 50, 0.4);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        input {
+            padding: 8px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .form-section {
+            margin-bottom: 20px;
+        }
+
+        .crop-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .crop-card {
+            padding: 15px;
+            border-radius: 15px;
+            background: #f1f8e9;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: 0.3s;
+        }
+
+        .crop-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .photos {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .photos img {
+            width: 100%;
+            border-radius: 12px;
+            object-fit: cover;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .header h1 {
+            margin-bottom: 0;
+            text-align: left;
+            font-size: 24px;
+        }
+
+        .user-menu {
+            position: relative;
+            display: inline-block;
+        }
+
+        .user-button {
+            background: rgba(46, 125, 50, 0.1);
+            color: #2e7d32;
+            border: 1px solid #2e7d32;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+        }
+
+        .user-button:hover {
+            background: rgba(46, 125, 50, 0.2);
+            transform: scale(1.02);
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 110%;
+            background-color: white;
+            min-width: 180px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            z-index: 10;
+            overflow: hidden;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .dropdown-content.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: 12px 20px;
+            text-decoration: none;
+            display: block;
+            color: #444;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.2s;
+            text-align: left;
+            background: none;
+            width: 100%;
+            border-radius: 0;
+            border: none;
+            font-weight: 500;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f1f8e9;
+            transform: none;
+            color: #2e7d32;
+        }
+
+        .logout-btn {
+            color: #d32f2f;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .logout-btn:hover {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+
+        @keyframes pulseMic {
+            0% {
+                box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 6px rgba(244, 67, 54, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(244, 67, 54, 0);
+            }
+        }
+
+        .mic-active {
+            background-color: #ffebee !important;
+            color: #d32f2f !important;
+            animation: pulseMic 1.5s infinite;
+        }
+
+        .mic-btn {
+            color: #1976d2;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .mic-btn:hover {
+            background-color: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .lang-select-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 20px;
+            cursor: default;
+        }
+
+        .lang-select-wrapper select {
+            padding: 4px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            font-size: 13px;
+            background: white;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .disease-result-container {
+            margin-top: 20px;
+            text-align: left;
+            display: none;
+            background: #f1f8e9;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 5px solid #2e7d32;
+        }
+
+        .disease-result-container h4 {
+            color: #d32f2f;
+            margin-bottom: 15px;
+            font-size: 18px;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 8px;
+        }
+
+        .disease-result-container .label {
+            color: #2e7d32;
+            font-weight: 700;
+            margin: 15px 0 5px 0;
+            font-size: 15px;
+        }
+
+        .disease-result-container p {
+            font-size: 14px;
+            color: #444;
+            line-height: 1.6;
+            margin-bottom: 10px;
+            white-space: pre-line;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- AUTH SCREEN -->
+    <div class="auth-screen" id="authScreen">
+        <div class="auth-box" id="authBox">
+            <h2 id="authTitle">🌱 GreenCrop Login</h2>
+            <input type="text" id="authUsername" placeholder="Username" />
+            <input type="password" id="authPassword" placeholder="Password" />
+            <button onclick="handleAuth()" id="authButton">Login</button>
+            <div class="toggle-text">
+                <span onclick="toggleAuth()" id="toggleLink">Don't have an account? Sign Up</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div class="container" id="dashboard">
+        <div class="header">
+            <h1 id="dashTitle">🌱 GreenCrop Dashboard</h1>
+            <div class="user-menu">
+                <button class="user-button" onclick="toggleUserMenu()">
+                    <span id="welcomeUser">User</span>
+                    <span style="font-size: 10px; margin-top:2px;">▼</span>
+                </button>
+                <div class="dropdown-content" id="userDropdown">
+                    <div id="lblSettings"
+                        style="padding: 10px 20px; font-size: 12px; color: #888; background: #fafafa; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #eee;">
+                        Settings</div>
+
+                    <div class="lang-select-wrapper">
+                        <span id="lblLanguage" style="font-size: 14px; font-weight: 500; color: #444;">Language</span>
+                        <select id="langSelect" onchange="changeLanguage()">
+                            <option value="en">English</option>
+                            <option value="hi">हिंदी</option>
+                            <option value="te">తెలుగు</option>
+                        </select>
+                    </div>
+
+
+                    <button class="dropdown-item logout-btn" id="lblLogout" onclick="logout()">Logout</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3 id="addCropTitle">Add New Crop</h3>
+            <input type="text" id="cropName" placeholder="Crop Name" />
+            <input type="date" id="plantDate" />
+            <button id="addCropBtn" onclick="addCrop()">Add Crop</button>
+        </div>
+
+        <div class="crop-list" id="cropList"></div>
+
+        <!-- Disease Detection Modal -->
+        <div id="diseaseModal"
+            style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; z-index: 1000;">
+            <div
+                style="background:white; padding:30px; border-radius:15px; width:500px; text-align:center; max-height: 90vh; overflow-y: auto;">
+                <h3 id="reportTitle" style="color:#2e7d32; margin-bottom:15px;">Report Crop Problem</h3>
+                <div style="position: relative; margin-bottom: 10px; width: 100%;">
+                    <textarea id="problemText" placeholder="Describe the issue (e.g., yellow leaves, spots, fungus)..."
+                        style="width:100%; height:80px; padding:10px; padding-right: 40px; border-radius:10px; border:1px solid #ccc; resize: none;"></textarea>
+                    <button id="micBtn" class="mic-btn" onclick="toggleDictation()" type="button"
+                        style="position: absolute; bottom: 10px; right: 10px; background: none; border: none; font-size: 18px; cursor: pointer; padding: 5px; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; transition: 0.3s;"
+                        title="Speech to Text">
+                        🎤
+                    </button>
+                </div>
+                <input type="file" id="diseaseImage" style="margin-bottom:15px;" />
+                <button id="detectBtn" onclick="submitDiseaseReport()" style="margin-bottom:10px;">Detect
+                    Disease</button>
+                <button id="closeBtn" onclick="closeModal()" style="background:#c62828;">Close</button>
+
+                <div class="disease-result-container" id="diseaseResultContainer">
+                    <h4 id="diseaseTitle"></h4>
+                    <div id="diseaseMainContent" style="display:none;">
+                        <div class="label">Symptom Note:</div>
+                        <p id="diseaseNote"></p>
+
+                        <div class="label">How to Cure:</div>
+                        <p id="diseaseCure"></p>
+                        <button id="speakResultBtn" onclick="speakDiseaseResult()" style="margin-top:15px; background: #1976d2;">🔊 Speak Result</button>                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ================== USER MENU DROP DOWN ==================
+        function toggleUserMenu() {
+            document.getElementById('userDropdown').classList.toggle('show');
+        }
+
+        window.onclick = function (event) {
+            // Don't close dropdown if clicking on user button, language select, or dropdown content
+            if (!event.target.closest('.user-button') &&
+                !event.target.closest('.lang-select-wrapper') &&
+                !event.target.closest('.dropdown-content')) {
+                const dropdowns = document.getElementsByClassName("dropdown-content");
+                for (let i = 0; i < dropdowns.length; i++) {
+                    const openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+
+        // ================== INITIAL SETUP ==================
+        let isLogin = true;
+        let users = JSON.parse(localStorage.getItem('users')) || [];
+        let currentUser = localStorage.getItem('currentUser');
+        let crops = [];
+        let currentLanguage = localStorage.getItem('currentLanguage') || 'en';
+
+        // ================== SIMPLE PASSWORD HASH (SIMULATION) ==================
+        function hashPassword(password) {
+            return btoa(password); // basic encoding (demo only)
+        }
+
+        // ================== TOGGLE LOGIN / SIGNUP ==================
+        function toggleAuth() {
+            isLogin = !isLogin;
+
+            document.getElementById('authTitle').innerText =
+                isLogin ? '🌱 GreenCrop Login' : '🌿 Create Account';
+
+            document.getElementById('authButton').innerText =
+                isLogin ? 'Login' : 'Sign Up';
+
+            document.getElementById('toggleLink').innerText =
+                isLogin
+                    ? "Don't have an account? Sign Up"
+                    : 'Already have an account? Login';
+        }
+
+        // ================== AUTH FUNCTION ==================
+        function handleAuth() {
+            const username = document.getElementById('authUsername').value.trim();
+            const password = document.getElementById('authPassword').value.trim();
+
+            if (!username || !password) {
+                alert('Please fill all fields');
+                return;
+            }
+
+            const hashed = hashPassword(password);
+
+            if (isLogin) {
+                const existingUser = users.find(
+                    u => u.username === username && u.password === hashed
+                );
+
+                if (!existingUser) {
+                    alert('Invalid username or password');
+                    return;
+                }
+
+                localStorage.setItem('currentUser', username);
+                currentUser = username;
+            } else {
+                const userExists = users.find(u => u.username === username);
+
+                if (userExists) {
+                    alert('Username already exists');
+                    return;
+                }
+
+                users.push({ username, password: hashed });
+                localStorage.setItem('users', JSON.stringify(users));
+
+                alert('Account created successfully! Please login.');
+                toggleAuth();
+                return;
+            }
+
+            loadUserData();
+            showDashboard();
+        }
+
+        // ================== LOAD USER DATA ==================
+        function loadUserData() {
+            crops = JSON.parse(localStorage.getItem('crops_' + currentUser)) || [];
+        }
+
+        // ================== SAVE CROPS ==================
+        function saveToStorage() {
+            localStorage.setItem('crops_' + currentUser, JSON.stringify(crops));
+        }
+
+        // ================== SHOW DASHBOARD ==================
+        function showDashboard() {
+            document.getElementById('authScreen').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+
+            // Show username avatar/text
+            document.getElementById('welcomeUser').innerText = '👤 ' + currentUser;
+
+            // Initialize language selection
+            const langSelect = document.getElementById('langSelect');
+            if (langSelect) {
+                langSelect.value = currentLanguage;
+                console.log('Language select set to:', currentLanguage); // Debug log
+                changeLanguage(); // Apply current language
+            } else {
+                console.error('Language select element not found!');
+            }
+
+            renderCrops();
+        }
+
+        // ================== LOGOUT ==================
+        function logout() {
+            localStorage.removeItem('currentUser');
+            location.reload();
+        }
+
+        // ================== ADD CROP ==================
+        function addCrop() {
+            const name = document.getElementById('cropName').value;
+            const date = document.getElementById('plantDate').value;
+
+            if (!name || !date) {
+                alert('Please fill all fields');
+                return;
+            }
+
+            const crop = {
+                id: Date.now(),
+                name,
+                date,
+                photos: []
+            };
+
+            crops.push(crop);
+            saveToStorage();
+            renderCrops();
+
+            document.getElementById('cropName').value = '';
+            document.getElementById('plantDate').value = '';
+        }
+
+        // ================== DELETE CROP ==================
+        function deleteCrop(id) {
+            crops = crops.filter(c => c.id !== id);
+            saveToStorage();
+            renderCrops();
+        }
+
+        // ================== UPLOAD PHOTO ==================
+        function uploadPhoto(event, cropId) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const crop = crops.find(c => c.id === cropId);
+                crop.photos.push(e.target.result);
+                saveToStorage();
+                renderCrops();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // ================== RENDER CROPS ==================
+        function renderCrops() {
+            const cropList = document.getElementById('cropList');
+            cropList.innerHTML = '';
+
+            const t = translations && translations[currentLanguage] ? translations[currentLanguage] : translations['en'];
+
+            crops.forEach(crop => {
+                const card = document.createElement('div');
+                card.className = 'crop-card';
+
+                card.innerHTML = `
+      <h4>${crop.name}</h4>
+      <p>${t.plantedOn || 'Planted on:'} ${crop.date}</p>
+      <button onclick="deleteCrop(${crop.id})" style="background:#c62828;margin-bottom:8px;">${t.deleteBtn || 'Delete'}</button>
+      <input type="file" onchange="uploadPhoto(event, ${crop.id})" />
+      <div class="photos">
+        ${crop.photos.map(photo => `<img src="${photo}" />`).join('')}
+      </div>
+      <button onclick="openDiseaseModal(${crop.id})" style="margin-top:10px;">${t.reportProbBtn || 'Report Problem'}</button>
+    `;
+
+                cropList.appendChild(card);
+            });
+        }
+
+        // ================== DISEASE MODAL FUNCTIONS ==================
+        let selectedCropId = null;
+
+        function openDiseaseModal(cropId) {
+            selectedCropId = cropId;
+            document.getElementById('diseaseModal').style.display = 'flex';
+            const resultContainer = document.getElementById('diseaseResultContainer');
+            if (resultContainer) resultContainer.style.display = 'none';
+        }
+
+        function closeModal() {
+            document.getElementById('diseaseModal').style.display = 'none';
+        }
+
+        function submitDiseaseReport() {
+            const text = document.getElementById('problemText').value.trim();
+            const image = document.getElementById('diseaseImage').files[0];
+
+            if (!text && !image) {
+                alert('Please describe the problem or upload an image');
+                return;
+            }
+
+            const resultContainer = document.getElementById('diseaseResultContainer');
+            const titleEl = document.getElementById('diseaseTitle');
+            const mainContent = document.getElementById('diseaseMainContent');
+            const noteEl = document.getElementById('diseaseNote');
+            const cureEl = document.getElementById('diseaseCure');
+
+            resultContainer.style.display = 'block';
+            mainContent.style.display = 'none';
+
+            titleEl.style.color = '#2e7d32';
+            titleEl.style.borderBottom = 'none';
+            titleEl.innerText = 'Analyzing crop damage... (AI model integration)';
+
+            setTimeout(() => {
+                titleEl.style.color = '#d32f2f';
+                titleEl.style.borderBottom = '1px solid #e0e0e0';
+                titleEl.innerText = '⚠ Detection Result: Leaf Spot';
+
+                mainContent.style.display = 'block';
+                noteEl.innerText = 'Leaf spot is a descriptive term applied to foliage diseases caused primarily by pathogenic fungi and bacteria. Symptoms typically include brownish, blackish, or yellow spots on the leaves. If ignored, the spots can merge, leading to premature leaf drop, severely stunted growth, and weakened overall plant health.';
+                cureEl.innerText = '• Prune and destroy heavily infected leaves immediately to prevent further spread.\n• Ensure proper spacing between plants to improve air circulation and sunlight exposure.\n• Avoid overhead watering; water at the base of the plant to keep the foliage dry.\n• Apply organic fungicidal treatments like Neem oil or Copper-based sprays during the early stages of infection.';
+            }, 2000);
+        }
+
+        // ================== TRANSLATIONS ==================
+        const translations = {
+            en: {
+                dashTitle: "🌱 GreenCrop Dashboard",
+                lblSettings: "Settings",
+                lblLanguage: "Language",
+                lblSpeech: "Speech to Text",
+                lblAccount: "Account",
+                lblLogout: "Logout",
+                addCropTitle: "Add New Crop",
+                cropNamePlace: "Crop Name",
+                addCropBtn: "Add Crop",
+                reportTitle: "Report Crop Problem",
+                problemTextPlace: "Describe the issue (e.g., yellow leaves, spots, fungus)...",
+                detectBtn: "Detect Disease",
+                closeBtn: "Close",
+                plantedOn: "Planted on:",
+                deleteBtn: "Delete",
+                reportProbBtn: "Report Problem",
+                speakResultBtn: "🔊 Speak Result"
+            },
+            hi: {
+                dashTitle: "🌱 ग्रीनक्रॉप डैशबोर्ड",
+                lblSettings: "सेटिंग्स",
+                lblLanguage: "भाषा",
+                lblAccount: "खाता",
+                lblLogout: "लॉग आउट",
+                addCropTitle: "नई फसल जोड़ें",
+                cropNamePlace: "फसल का नाम",
+                addCropBtn: "फसल जोड़ें",
+                reportTitle: "फसल समस्या रिपोर्ट करें",
+                problemTextPlace: "समस्या का वर्णन करें...",
+                detectBtn: "बीमारी का पता लगाएं",
+                closeBtn: "बंद करें",
+                plantedOn: "लगाया गया:",
+                deleteBtn: "हटाएं",
+                reportProbBtn: "समस्या",
+                speakResultBtn: "🔊 परिणाम सुनें"
+            },
+            te: {
+                dashTitle: "🌱 గ్రీన్క్రాప్ డాష్బోర్డ్",
+                lblSettings: "సెట్టింగులు",
+                lblLanguage: "భాష",
+                lblAccount: "ఖాతా",
+                lblLogout: "లాగ్ అవుట్",
+                addCropTitle: "కొత్త పంటను జోడించండి",
+                cropNamePlace: "పంట పేరు",
+                addCropBtn: "పంట జోడించండి",
+                reportTitle: "పంట సమస్యను నివేదించండి",
+                problemTextPlace: "సమస్యను వివరించండి...",
+                detectBtn: "వ్యాధి గుర్తించండి",
+                closeBtn: "మూసివేయి",
+                plantedOn: "నాటిన తేదీ:",
+                deleteBtn: "తొలగించు",
+                reportProbBtn: "సమస్యను నివేదించండి",
+                speakResultBtn: "🔊 ఫలితం వినండి"
+            }
+        };
+
+        function changeLanguage() {
+            const langSelect = document.getElementById('langSelect');
+            const lang = langSelect ? langSelect.value : 'en';
+
+            if (lang === currentLanguage) {
+                return;
+            }
+
+            const t = translations[lang];
+            if (!t) {
+                console.error('No translations found for language:', lang);
+                return;
+            }
+
+            // Save current language
+            currentLanguage = lang;
+            localStorage.setItem('currentLanguage', lang);
+
+            // Apply translations
+            document.getElementById('dashTitle').innerText = t.dashTitle;
+            document.getElementById('lblSettings').innerText = t.lblSettings;
+            document.getElementById('lblLanguage').innerText = t.lblLanguage;
+            document.getElementById('lblLogout').innerText = t.lblLogout;
+            document.getElementById('addCropTitle').innerText = t.addCropTitle;
+            document.getElementById('cropName').placeholder = t.cropNamePlace;
+            document.getElementById('addCropBtn').innerText = t.addCropBtn;
+
+            // Update modal elements if they exist
+            const reportTitle = document.getElementById('reportTitle');
+            if (reportTitle) reportTitle.innerText = t.reportTitle;
+
+            const problemText = document.getElementById('problemText');
+            if (problemText) problemText.placeholder = t.problemTextPlace;
+
+            const detectBtn = document.getElementById('detectBtn');
+            if (detectBtn) detectBtn.innerText = t.detectBtn;
+
+            const closeBtn = document.getElementById('closeBtn');
+            if (closeBtn) closeBtn.innerText = t.closeBtn;
+
+            const speakResultBtn = document.getElementById('speakResultBtn');
+            if (speakResultBtn) speakResultBtn.innerText = t.speakResultBtn;
+
+            // Update speech recognition
+            if (recognition) {
+                recognition.lang = lang;
+            }
+
+            renderCrops();
+
+            // Visual feedback
+            const colors = {
+                'en': 'linear-gradient(135deg, #134e5e, #71b280, #2e7d32, #1b5e20)',
+                'hi': 'linear-gradient(135deg, #2e7d32, #71b280, #134e5e, #1b5e20)',
+                'te': 'linear-gradient(135deg, #1b5e20, #134e5e, #71b280, #2e7d32)'
+            };
+            document.body.style.background = colors[lang] || colors['en'];
+        }
+
+        // ================== SPEECH TO TEXT ==================
+        let isDictating = false;
+        let recognition = null;
+        let lastFocusedInput = null;
+
+        document.addEventListener('focusin', (e) => {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                lastFocusedInput = e.target;
+            }
+        });
+
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechReco = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechReco();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+
+            recognition.onstart = function () {
+                isDictating = true;
+                const micBtn = document.getElementById('micBtn');
+                if (micBtn) micBtn.classList.add('mic-active');
+            };
+
+            recognition.onresult = function (event) {
+                const transcript = event.results[0][0].transcript;
+
+                const targetInput = lastFocusedInput && (lastFocusedInput.offsetWidth > 0 && lastFocusedInput.offsetHeight > 0)
+                    ? lastFocusedInput
+                    : document.getElementById('problemText');
+
+                if (targetInput) {
+                    if (targetInput.id === 'problemText' && document.getElementById('diseaseModal').style.display === 'none') {
+                        if (crops.length > 0) {
+                            openDiseaseModal(crops[0].id);
+                        } else {
+                            alert('Please add a crop first to report a problem.');
+                            return;
+                        }
+                    }
+                    targetInput.value += (targetInput.value ? ' ' : '') + transcript;
+                }
+            };
+
+            recognition.onerror = function (event) {
+                console.error("Speech recognition error", event.error);
+                stopDictation();
+            };
+
+            recognition.onend = function () {
+                stopDictation();
+            };
+        }
+
+        function toggleDictation() {
+            if (!recognition) {
+                alert("Speech recognition is not supported in this browser. Try Chrome.");
+                return;
+            }
+
+            if (isDictating) {
+                recognition.stop();
+            } else {
+                recognition.lang = currentLanguage;
+                recognition.start();
+            }
+        }
+
+        function stopDictation() {
+            isDictating = false;
+            const micBtn = document.getElementById('micBtn');
+            if (micBtn) micBtn.classList.remove('mic-active');
+        }
+
+        // ================== TEXT TO SPEECH ==================
+        function speakText(text, lang = 'en-US') {
+            if ('speechSynthesis' in window) {
+                // Stop any existing speech
+                window.speechSynthesis.cancel();
+
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = lang;
+                utterance.rate = 1;
+                utterance.pitch = 1;
+                utterance.volume = 1;
+
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert('Text-to-speech is not supported in this browser.');
+            }
+        }
+
+        // Function to speak disease detection result
+        function speakDiseaseResult() {
+            const title = document.getElementById('diseaseTitle').innerText;
+            const note = document.getElementById('diseaseNote').innerText;
+            const cure = document.getElementById('diseaseCure').innerText;
+            const lang = currentLanguage;
+            
+            const langMap = { 'en': 'en-US', 'hi': 'hi-IN', 'te': 'te-IN' };
+            const speechLang = langMap[lang] || 'en-US';
+
+            const fullText = `${title}. Symptom Note: ${note}. How to cure: ${cure}`;
+            speakText(fullText, speechLang);
+        }
+
+        // ================== INITIALIZATION ==================
+        // Set initial translation mapping for defaults before crops are rendered
+        window.translations = translations;
+
+        // ================== AUTO LOGIN ON REFRESH ==================
+        window.onload = function () {
+            if (currentUser) {
+                loadUserData();
+                showDashboard();
+            }
+        };
+    </script>
+
+</body>
+
+</html>
